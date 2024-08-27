@@ -7,5 +7,5 @@ User Management: Registration, login, password reset, and email verification.
 Loan Management: Apply for loans, view loan statuses, and manage loans.
 Admin Functionalities: View and delete users, and access system logs.
 
-#[Documentation](https://documenter.getpostman.com/view/24071191/2sAXjGdu5q#34a50d84-c91f-4145-85d7-7efb24126e64)
+#[Postman Documentation](https://documenter.getpostman.com/view/24071191/2sAXjGdu5q#34a50d84-c91f-4145-85d7-7efb24126e64)
 
