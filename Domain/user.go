@@ -13,3 +13,17 @@ type  User struct {
 	Role string `json:"role" bson:"role"`
 
 }
+
+type ForgetPasswordInput struct {
+	Email    string `json:"email" bson:"email"`
+	Username string `json:"username" bson:"username"`
+}
+
+type ResetPasswordInput struct {
+	Username    string `json:"username" bson:"username"`
+	NewPassword string `json:"password" bson:"password"`
+}
+
+type ChangePasswordInput struct {
+	NewPassword string `json:"password" bson:"password"`
+}
