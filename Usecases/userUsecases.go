@@ -59,15 +59,15 @@ func (u *userUsecase) CreateUser(user *Domain.RegisterInput) (*Domain.User, erro
         return nil, fmt.Errorf("failed to hash password: %v", err)
     }
 
-    userData := &Domain.User{
+	userData := &Domain.User{
         ID:         primitive.NewObjectID(),
-        FirstName:  user.FirstName,
-        LastName:   user.LastName,
-        Username:   user.Username,
-        Password:   hashedPassword,
-        Email:      user.Email,
-        IsActive:   false,
-    }
+		FirstName:  user.FirstName,
+		LastName:   user.LastName,
+		Username:   user.Username,
+		Password:   hashedPassword,
+		Email:      user.Email,
+		IsActive:   false,
+	}
 
     if ok, err := u.userRepository.IsDbEmpty(); ok && err == nil {
         userData.Role = "admin"

@@ -6,13 +6,12 @@ import (
 	"LoanTracker/infrastructure"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 )
 
 type UserController struct {
 	UserUsecase Usecases.UserUsecase
-
 }
 
 func NewUserController(userUsecase Usecases.UserUsecase) *UserController {
@@ -28,15 +27,14 @@ func (u *UserController) Register(c *gin.Context) {
 		return
 	}
 
-	user, err := u.UserUsecase.CreateUser(&input)
+	_, err := u.UserUsecase.CreateUser(&input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"user": user})
+	c.JSON(http.StatusCreated, gin.H{"message": "user successfully registered"})
 }
-
 
 func (u *UserController) VerifyEmail(c *gin.Context) {
 	token := c.Param("token")
@@ -55,7 +53,7 @@ func (uc *UserController) Login(c *gin.Context) {
 		return
 	}
 
-	accessToken, refresh_token , err := uc.UserUsecase.Login(c, &input)
+	accessToken, refresh_token, err := uc.UserUsecase.Login(c, &input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -92,7 +90,6 @@ func (uc *UserController) RefreshToken(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	
 
 	// Set token claims in context
 	claims, ok := token.Claims.(*infrastructure.Claims)
@@ -108,7 +105,7 @@ func (uc *UserController) RefreshToken(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	refreshToken , err = infrastructure.GenerateRefreshToken(claims.Username)
+	refreshToken, err = infrastructure.GenerateRefreshToken(claims.Username)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -116,8 +113,6 @@ func (uc *UserController) RefreshToken(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"access_token": accessToken})
 }
-
-
 
 func (uc *UserController) GetProfile(c *gin.Context) {
 	username := c.GetString("username")
@@ -149,20 +144,20 @@ func (uc *UserController) ForgotPassword(c *gin.Context) {
 		return
 	}
 
-	_, err := uc.UserUsecase.ForgotPassword(c , input.Username)
+	_, err := uc.UserUsecase.ForgotPassword(c, input.Username)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
+	c.JSON(http.StatusOK, gin.H{"message": "Reset link sent to your email"})
 
 }
-
 
 func (uc *UserController) ResetPassword(c *gin.Context) {
 	reset_token := c.Param("token")
 
-	new_token, err := uc.UserUsecase.Reset(c ,reset_token)
+	new_token, err := uc.UserUsecase.Reset(c, reset_token)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -171,7 +166,6 @@ func (uc *UserController) ResetPassword(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"access_token": new_token})
 
 }
-
 
 func (uc *UserController) DeleteUser(c *gin.Context) {
 	// username := c.Param("username")
@@ -195,7 +189,6 @@ func (uc *UserController) ChangePassword(c *gin.Context) {
 	}
 
 	username := c.GetString("username")
-
 
 	err := uc.UserUsecase.UpdatePassword(username, input.NewPassword)
 	if err != nil {

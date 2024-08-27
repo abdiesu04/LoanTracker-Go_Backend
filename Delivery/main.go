@@ -6,7 +6,6 @@ import (
 	"LoanTracker/Repository"
 	"LoanTracker/Usecases"
 	"LoanTracker/infrastructure"
-	"fmt"
 
 	"context"
 	"log"
@@ -41,22 +40,25 @@ func main(){
 
 	userCollection := userDatabase.Collection("User")
 	loanCollection := userDatabase.Collection("Loan")
+	logCollection := userDatabase.Collection("Logs")
 
 
-	userRepository := Repository.NewUserRepository(userCollection)
+	userRepository := Repository.NewUserRepository(userCollection )
 
 	loanRepository := Repository.NewLoanRepository(loanCollection)
-	loanUsecase := Usecases.NewLoanUsecase(loanRepository)
+	logRepository := Repository.NewLogRepository(logCollection)
+	loanUsecase := Usecases.NewLoanUsecase(loanRepository , logRepository)
 
 	// Initialize the Email Service
 	emailService := infrastructure.NewEmailService()
 
-	userUsecase := Usecases.NewUserUsecase(userRepository, emailService)
+	userUsecase := Usecases.NewUserUsecase(userRepository, logRepository , emailService ) 
 	loanController := Controller.NewLoanController(loanUsecase)
 	userController := Controller.NewUserController(userUsecase)
+	logController := Controller.NewLogController(logRepository)
 
 
-	router := router.SetupRouter(userController , loanController)
+	router := router.SetupRouter(userController , loanController , logController)
 	log.Fatal(router.Run(":8080"))
 
 }

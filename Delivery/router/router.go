@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(userController *Controller.UserController , loanController *Controller.LoanController) *gin.Engine {
+func SetupRouter(userController *Controller.UserController , loanController *Controller.LoanController , logController *Controller.LogController) *gin.Engine {
 	router := gin.Default()
     
 	loanRouter := router.Group("/").Use(infrastructure.AuthMiddleware())
@@ -36,10 +36,8 @@ func SetupRouter(userController *Controller.UserController , loanController *Con
 	adminRoutes := router.Group("/admin")
 	adminRoutes.Use(infrastructure.RoleMiddleware("admin"))
 	adminRoutes.GET("/users", userController.FindUsers)
-	// r.GET("/loans/:id", loanController.GetLoanStatusHandler)
-	// r.GET("/admin/loans", loanController.GetAllLoansHandler)
-	// r.PATCH("/admin/loans/:id/status", loanController.UpdateLoanStatusHandler)
-	// r.DELETE("/admin/loans/:id", loanController.DeleteLoanHandler)
+	adminRoutes.GET("logs" , logController.GetLogs)
+	adminRoutes.DELETE("/users/:id", userController.DeleteUser)
 
 	return router
 }

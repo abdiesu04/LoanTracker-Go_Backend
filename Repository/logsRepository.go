@@ -3,8 +3,10 @@ package Repository
 import (
 	"LoanTracker/Domain"
 	"context"
+	"fmt"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -32,17 +34,24 @@ func (r *logRepository) CreateLog(log *Domain.SystemLog) error {
 func (r *logRepository) GetLogs() ([]Domain.SystemLog, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
-	opts := options.Find().SetSort(map[string]int{"timestamp": -1}) // Sort logs by newest first
-	cursor, err := r.collection.Find(ctx, map[string]interface{}{}, opts)
+
+	// Set options to sort by the timestamp in descending order and limit to 100 logs
+	opts := options.Find().
+		SetSort(bson.D{{Key: "timestamp", Value: -1}}). // Sort by latest timestamp
+		SetLimit(100) // Limit to the first 100 results
+
+	cursor, err := r.collection.Find(ctx, bson.D{}, opts) // Use bson.D{} to represent an empty filter
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
-	
+
 	var logs []Domain.SystemLog
 	if err := cursor.All(ctx, &logs); err != nil {
 		return nil, err
 	}
+	fmt.Println(logs)
 	return logs, nil
+
 }
+
